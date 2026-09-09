@@ -158,8 +158,8 @@ flowchart TD
 #### Backend
 1. Clone the repository and navigate to the backend directory:
    ```bash
-   git clone git@github.com:CodeFingers809/cfa-agent-langgraph.git
-   cd cfa-agent-langgraph/backend
+   git clone https://github.com/souravgeek/finance-agent-langgraph.git
+   cd finance-agent-langgraph/backend
    ```
 
 2. Create a virtual environment and install dependencies using `uv`:
