@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package financial_agent;
+
+message ChatRequest {
+  string conversation_id = 1;
+  string message = 2;
+  string model_name = 3;
+}
+
+message ToolCallStart {
+  string tool_name = 1;
+  string arguments_json = 2;
+}
+
+message ToolCallEnd {
+  string tool_name = 1;
+  string output_json = 2;
+  int64 execution_time_ms = 3;
+}
+
+message TextChunk {
+  string text = 1;
+  bool is_final_chunk = 2;
+}
+
+message HRPOptimizationResult {
+  repeated string symbols = 1;
+  repeated float weights = 2;
+  string summary_notes = 3;
+}
+
+message ResearchStageUpdate {
+  string stage = 1;
+  string status = 2;
+}
+
+message ResearchReportFinal {
+  string markdown = 1;
+  string created_at = 2;
+}
+
+message StreamEvent {
+  string event_id = 1;
+  string timestamp = 2;
+  oneof payload {
+    TextChunk text_chunk = 3;
+    ToolCallStart tool_start = 4;
+    ToolCallEnd tool_end = 5;
+    HRPOptimizationResult hrp_result = 6;
+    string error_message = 7;
+    bool is_finished = 8;
+    ResearchStageUpdate research_stage_update = 9;
+    ResearchReportFinal research_report_final = 10;
+    PriceChartResult price_chart = 11;
+    QuarterlyGrowthResult growth_chart = 12;
+    AnalystTargetResult analyst_chart = 13;
+    FiiDiiFlowResult fii_dii_chart = 14;
+  }
+}
+
+message PriceChartPoint {
+  string date = 1;
+  double open = 2;
+  double high = 3;
+  double low = 4;
+  double close = 5;
+  int64 volume = 6;
+}
+
+message PriceChartResult {
+  string symbol = 1;
+  repeated PriceChartPoint points = 2;
+  string period = 3;
+}
+
+message QuarterlyGrowthResult {
+  string symbol = 1;
+  repeated string quarters = 2;
+  repeated double revenue = 3;
+  repeated double net_income = 4;
+  repeated double yoy_growth_pct = 5;
+  repeated double qoq_growth_pct = 6;
+}
+
+message AnalystTargetResult {
+  string symbol = 1;
+  repeated string dates = 2;
+  repeated double target_prices = 3;
+  repeated string firms = 4;
+  double current_price = 5;
+}
+
+message FiiDiiFlowResult {
+  repeated string dates = 1;
+  repeated double fii_net_cr = 2;
+  repeated double dii_net_cr = 3;
+}
+

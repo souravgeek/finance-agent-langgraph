@@ -1,0 +1,43 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-net
+
+  backend:
+    image: '${DOCKER_IMAGE_BACKEND:-finance-agent-backend}:${TAG-latest}'
+    restart: always
+    networks:
+      - backend-net
+    depends_on:
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+      - FRONTEND_HOST=${FRONTEND_HOST:-http://localhost:5173}
+      - ENVIRONMENT=${ENVIRONMENT:-local}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:5173}
+      - SECRET_KEY=${SECRET_KEY}
+      - REDIS_URL=redis://redis:6379/0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/utils/health-check/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+
+networks:
+  backend-net:
+    driver: bridge
